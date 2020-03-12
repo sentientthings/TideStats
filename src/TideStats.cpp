@@ -1,3 +1,11 @@
+/*
+  TideStats.h - Sentient Things tide statistics library
+  Copyright (c) 2020 Sentient Things, Inc.  All right reserved.
+  Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+
+  Version 0.0.3
+
+*/
 #include "Particle.h"
 
 // include this library's description file
@@ -28,15 +36,16 @@ LEDStatus blinkWhite(RGB_COLOR_WHITE, LED_PATTERN_BLINK, LED_SPEED_NORMAL, LED_P
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
 
-TideStats::TideStats(IoTNode& node) : framState(node.makeFramArray(1, sizeof(state))),
+TideStats::TideStats(IoTNode& node) : _node(node),
+                                        framState(node.makeFramArray(1, sizeof(state))),
                                         framCalibDist(node.makeFramArray(1, sizeof(calibDist))),
                                         framCalib(node.makeFramArray(1, sizeof(calib))),
                                         framMllw(node.makeFramArray(1, sizeof(mllwStats))),
                                         framMhhw(node.makeFramArray(1, sizeof(mhhwStats))),
                                         framMsl(node.makeFramArray(1, sizeof(mslStats))),
                                         framRecord(node.makeFramArray(1, sizeof(record))),
-                                        framPeriodDatum((node.makeFramArray(1, sizeof(periodDatum)))),                                                                              
-                                        _node(node)
+                                        framPeriodDatum((node.makeFramArray(1, sizeof(periodDatum))))                                                                              
+                                        
 {
   // initialize this instance's variables
 
@@ -103,13 +112,14 @@ void TideStats::pushDistanceUpwards(double distUp)
       else if (readingTime - periodDatum.startTime < DATUM_PERIOD_S)
       {
         // Same period so update period mllw and mhhw if applicable
-        DEBUG_PRINT("Same period: ");
         DEBUG_PRINT(readingTime - periodDatum.startTime);
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT("s of ");
+        DEBUG_PRINT(DATUM_PERIOD_S);
+        DEBUG_PRINT("s period: range:");
         DEBUG_PRINT(distUp);
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT(" period low:");
         DEBUG_PRINT(periodDatum.mllw);
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT(" period high");
         DEBUG_PRINTLN(periodDatum.mhhw);   
         if (distUp < periodDatum.mllw)
         {
@@ -155,14 +165,15 @@ void TideStats::pushDistanceUpwards(double distUp, uint32_t readingTime)
       else if (readingTime - periodDatum.startTime < DATUM_PERIOD_S)
       {
         // Same period so update period mllw and mhhw if applicable
-        DEBUG_PRINT("Same period: ");
         DEBUG_PRINT(readingTime - periodDatum.startTime);
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT("s of ");
+        DEBUG_PRINT(DATUM_PERIOD_S);
+        DEBUG_PRINT("s period: range:");
         DEBUG_PRINT(distUp);
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT(" period low:");
         DEBUG_PRINT(periodDatum.mllw);
-        DEBUG_PRINT(" ");
-        DEBUG_PRINTLN(periodDatum.mhhw);  
+        DEBUG_PRINT(" period high");
+        DEBUG_PRINTLN(periodDatum.mhhw);   
         if (distUp < periodDatum.mllw)
         {
           periodDatum.mllw = distUp;
@@ -190,6 +201,22 @@ void TideStats::pushDistanceUpwards(double distUp, uint32_t readingTime)
       }
       state.lastReadingTime = readingTime;
       saveFram(); // Could me more efficient to only save what has changed
+}
+
+float TideStats::mllwCalibrationHoursLeft()
+{
+  uint32_t readingTime = _node.unixTime();
+  float hoursLeft;
+  if (mllw()==0)
+  {
+    hoursLeft = (DATUM_PERIOD_S - float(readingTime - periodDatum.startTime))/3600.0;
+  }
+  else
+  {
+    hoursLeft = 0;
+  }
+  
+  return hoursLeft;
 }
 
 // Private Methods /////////////////////////////////////////////////////////////

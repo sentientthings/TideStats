@@ -1,8 +1,9 @@
 /*
   TideStats.h - Sentient Things tide statistics library
   Copyright (c) 2020 Sentient Things, Inc.  All right reserved.
+  Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
 
-  Version 0.0.1
+  Version 0.0.3
 
 */
 // ensure this library description is only included once
@@ -26,7 +27,7 @@
 #define MAX_CALIBRATION_GAP_SEC 3660
 
 #define DATUM_PERIOD_S 90000 // 25 hours to measure both low tides
-#define DATUM_MAX_GAP_S 1080 //18 minutes
+#define DATUM_MAX_GAP_S 3600 //60 minutes
 #endif
 
 // Struct to store the state of the node
@@ -136,6 +137,13 @@ class TideStats
     double mllw();
     double mhhw();
     double msl();
+
+    /**
+     * @brief Returns the number of hours left for the first mllw
+     * 
+     * @return float 
+     */
+    float mllwCalibrationHoursLeft();
 
     double standardDeviationMllw();
     double standardDeviationMhhw();
