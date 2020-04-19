@@ -3,8 +3,6 @@
   Copyright (c) 2020 Sentient Things, Inc.  All right reserved.
   Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
 
-  Version 0.0.3
-
 */
 #include "Particle.h"
 
@@ -94,7 +92,7 @@ bool TideStats::isCalibrated()
 
 void TideStats::pushDistanceUpwards(double distUp)
 {
-      uint32_t readingTime = _node.unixTime();
+      uint32_t readingTime = Time.now();
             
       // Calculate msl
       mslStats = pushStats(distUp, framMsl);
@@ -205,7 +203,7 @@ void TideStats::pushDistanceUpwards(double distUp, uint32_t readingTime)
 
 float TideStats::mllwCalibrationHoursLeft()
 {
-  uint32_t readingTime = _node.unixTime();
+  uint32_t readingTime = Time.now();
   float hoursLeft;
   if (mllw()==0)
   {

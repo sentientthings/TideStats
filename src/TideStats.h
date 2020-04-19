@@ -3,6 +3,8 @@
   Copyright (c) 2020 Sentient Things, Inc.  All right reserved.
   Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
 
+  Version 0.0.4
+  Change time readings to Time.now()
   Version 0.0.3
 
 */
